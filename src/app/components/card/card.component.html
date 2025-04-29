@@ -1,0 +1,67 @@
+<nav>
+    <div class="md:flex md:justify-between md:w-2xl md:mx-auto lg:w-5xl lg:px-7">
+        <h1 class="text-center text-3xl font-bold mb-3 text-gray-700 dark:text-white">Extension List</h1>
+        <div class="flex justify-center gap-5">
+            <button
+              (click)="filtroAtivo = 'all'; mostrarTodos()"
+              [ngClass]="{
+                'bg-orange-700 text-white scale-90': filtroAtivo === 'all',
+                'bg-white text-gray-700 dark:bg-gray-800 dark:text-white': filtroAtivo !== 'all'
+              }"
+              class="px-4 py-2 rounded-full shadow transition-all duration-300 cursor-pointer"
+            >
+              All
+            </button>
+          
+            <button
+              (click)="filtroAtivo = 'focus'; mostrarFocus()"
+              [ngClass]="{
+                'bg-orange-700 text-white scale-90': filtroAtivo === 'focus',
+                'bg-white text-gray-700 dark:bg-gray-800 dark:text-white': filtroAtivo !== 'focus'
+              }"
+              class="px-4 py-2 rounded-full shadow transition-all duration-300 cursor-pointer"
+            >
+              Focus
+            </button>
+          
+            <button
+              (click)="filtroAtivo = 'infocus'; mostrarInfocus()"
+              [ngClass]="{
+                'bg-orange-700 text-white scale-90': filtroAtivo === 'infocus',
+                'bg-white text-gray-700 dark:bg-gray-800 dark:text-white': filtroAtivo !== 'infocus'
+              }"
+              class="px-4 py-2 rounded-full shadow transition-all duration-300 cursor-pointer"
+            >
+              Infocus
+            </button>
+          </div>          
+    </div>
+</nav>
+
+<ul class="py-3 md:grid md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-4 lg:px-5 ">
+    @for (item of dadosFiltrados; track $index) {
+    <li
+        class="flex flex-col mx-auto my-6 w-80 p-3 bg-white shadow md:my-2 md:w-80 rounded-2xl lg:my-0 dark:bg-gray-800">
+        <div class="flex gap-3">
+            <div class="w-30">
+                <img [src]="item.logo" alt="icone logo">
+            </div>
+            <div>
+                <h2 class="font-bold text-gray-700 text-xl dark:text-white">{{item.name}}</h2>
+                <p class="h-24 text-gray-500 text-md dark:text-white">{{item.description}}</p>
+            </div>
+        </div>
+        <div class="flex justify-between mx-2">
+            <button (click)="removerItem(item)"
+                class="border border-gray-200 text-gray-600 shadow rounded-full cursor-pointer px-3 py-1 active:scale-90 active:text-red-600 dark:bg-gray-800 dark:text-white">
+                Remove
+            </button>
+            @if (item.isActive === true) {
+            <img class="w-10" src="on-btn.png" alt="">
+            }@else {
+            <img class="w-10" src="off-btn.png" alt="">
+            }
+        </div>
+    </li>
+    }
+</ul>
