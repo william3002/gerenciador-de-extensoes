@@ -1,4 +1,5 @@
-export interface Dados {
+export interface DadosInterface {
+    id: number;
     logo: string;
     name: string;
     description: string;

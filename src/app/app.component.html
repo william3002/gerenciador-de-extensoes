@@ -1,5 +1,25 @@
-<div class="min-h-screen transition-all bg-blue-50 xl:px-60 xl:py-10 dark:bg-gray-900">
+<div class="min-h-screen w-full transition-all bg-blue-50 xl:px-60 xl:py-10 dark:bg-gray-900">
   <app-header></app-header>
-  <app-card></app-card>
-  <router-outlet /> 
+
+  <!-- Cards de totais -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 lg:w-[1000px] w-[340px] gap-4 px-4 md:w-full max-w-7xl mx-auto mb-10">
+    <div class="p-4 bg-white dark:bg-zinc-800 rounded-lg shadow text-center md:col-span-2 lg:col-span-1">
+      <p class="text-sm text-gray-500 dark:text-gray-300">📦 Total de Extensões</p>
+      <p class="text-2xl font-bold text-zinc-800 dark:text-white">{{ totalExtensoes }}</p>
+    </div>
+
+    <div class="p-4 bg-white dark:bg-zinc-800 rounded-lg shadow text-center">
+      <p class="text-sm text-gray-500 dark:text-gray-300">🟢 Ativos</p>
+      <p class="text-2xl font-bold text-green-600">{{ totalAtivas }}</p>
+    </div>
+
+    <div class="p-4 bg-white dark:bg-zinc-800 rounded-lg shadow text-center">
+      <p class="text-sm text-gray-500 dark:text-gray-300">🔴 Inativos</p>
+      <p class="text-2xl font-bold text-red-600">{{ totalInativas }}</p>
+    </div>
+  </div>
+  <!-- Lista de extensões com comunicação de evento -->
+  <app-card [dados]="extension" (dadosAlterados)="atualizarLista($event)"></app-card>
+
+  <router-outlet />
 </div>

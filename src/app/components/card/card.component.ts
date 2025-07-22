@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { Dados } from '../../models/dados';
-import data from '../../data.json';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { DadosInterface } from '../../models/dados';
 
 @Component({
   selector: 'app-card',
@@ -10,57 +9,48 @@ import data from '../../data.json';
   templateUrl: './card.component.html',
   styleUrl: './card.component.css',
 })
-export class CardComponent {
-  dados: Dados[] = data;
-  dadosFiltrados: Dados[] = [];
-  // Define um tipo para a variável `filtroAtivo` com três possíveis valores e inicia com 'all'
-  filtroAtivo: 'all' | 'focus' | 'infocus' = 'all';
+export class CardComponent implements OnInit {
+  @Input() dados: DadosInterface[] = []; // Recebe os dados do componente pai
+  @Output() dadosAlterados = new EventEmitter<DadosInterface[]>(); // Emite os dados alterados para o componente pai
 
-  // Armazena qual botão está ativo visualmente (útil para aplicar estilos)
-  botaoAtivo: string = 'all';
+  dadosFiltrados: DadosInterface[] = [];
+  filtroAtivo: 'all' | 'focus' | 'infocus' = 'all'; // Controla o filtro visual e lógico
 
-  // Construtor do componente, executado ao iniciar
-  constructor() {
-    // Inicializa a lista filtrada com todos os dados (sem filtro)
-    this.dadosFiltrados = this.dados;
+  ngOnInit(): void {
+    this.aplicarFiltro('all'); // Exibe todos ao iniciar
   }
 
-  // Mostra todos os itens da lista, sem filtro
-  mostrarTodos() {
-    this.dadosFiltrados = this.dados; // Atribui todos os dados
-    this.filtroAtivo = 'all'; // Marca o filtro ativo como 'all'
-    this.botaoAtivo = 'all'; // Define o botão visualmente ativo
-  }
+  aplicarFiltro(tipo: 'all' | 'focus' | 'infocus'): void {
+    this.filtroAtivo = tipo; // Atualiza o filtro ativo 
 
-  // Mostra apenas os itens com `isActive: true`
-  mostrarFocus() {
-    this.dadosFiltrados = this.dados.filter((item) => item.isActive === true); // Filtra ativos
-    this.filtroAtivo = 'focus'; // Marca filtro atual
-    this.botaoAtivo = 'focus'; // Define botão ativo
-  }
-
-  // Mostra apenas os itens com `isActive: false`
-  mostrarInfocus() {
-    this.dadosFiltrados = this.dados.filter((item) => item.isActive === false); // Filtra inativos
-    this.filtroAtivo = 'infocus'; // Marca filtro atual
-    this.botaoAtivo = 'infocus'; // Define botão ativo
-  }
-
-  // Remove o item da lista e atualiza a exibição conforme o filtro atual
-  removerItem(itemRemover: Dados) {
-    // Remove o item da lista original com base no nome
-    this.dados = this.dados.filter((item) => item.description !== itemRemover.description);
-
-    // Atualiza a lista filtrada com base no filtro atual
-    switch (this.filtroAtivo) {
+    // Aplica o filtro com base no tipo selecionado
+    switch (tipo) {
       case 'focus':
-        this.mostrarFocus();
+        this.dadosFiltrados = this.dados.filter((item) => item.isActive); // Exibe apenas os ativos
         break;
       case 'infocus':
-        this.mostrarInfocus();
+        this.dadosFiltrados = this.dados.filter((item) => !item.isActive); // Exibe apenas os inativos
         break;
       default:
-        this.mostrarTodos();
+        this.dadosFiltrados = this.dados; // Exibe todos os itens
     }
+  }
+
+  // Adiciona um novo item e atualiza o filtro e o pai
+  removerItem(itemRemover: DadosInterface): void {
+    const index = this.dados.findIndex(item => item.description === itemRemover.description); // Encontra o índice do item a ser removido
+    // Se o item for encontrado, remove-o da lista
+    if (index !== -1) {
+      this.dados.splice(index, 1); // O splice remove o item do array
+      this.aplicarFiltro(this.filtroAtivo); // Reaplica o filtro atual
+      this.dadosAlterados.emit(this.dados); // Envia os dados atualizados ao componente pai
+    }
+  }
+
+  // Altera o status (ativa/desativa) e atualiza o filtro e o pai
+  alternarStatus(item: DadosInterface): void {
+    item.isActive = !item.isActive; // Inverte o status do item
+    this.aplicarFiltro(this.filtroAtivo); // Reaplica o filtro para manter a lista correta
+    this.dadosAlterados.emit(this.dados); // Emite para atualizar os totais no AppComponent
   }
 }
